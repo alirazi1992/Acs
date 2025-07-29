@@ -1,39 +1,30 @@
 {
-  "typeAcquisition": {
-   "include": ["jest"]
-  }
-  ,
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "baseUrl": "./",
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": false,
+    "strict": true,
     "noEmit": true,
-    "incremental": true,
     "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
+    "incremental": true,
+    "types": ["react", "node", "jest"], 
     "plugins": [
       {
         "name": "next"
       }
-    ]
+    ],
+    "paths": {
+      "@/components/*": ["components/*"],
+      "@/*": ["./*"]
+    }
   },
-  "include": [
-    "next-env.d.ts",
-    ".next/types/**/*.ts",
-    "**/*.ts",
-    "**/*.tsx"
-, "app/app/Servises-AsiaApp/M_Search/SearchDocs.tss"  ],
-  "exclude": [
-    "node_modules"
-  ],
-  
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "server.js", "app/Servises-AsiaApp/M_Search/SearchDocs.tss"],
+  "exclude": ["node_modules"]
 }
