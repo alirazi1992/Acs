@@ -2,17 +2,18 @@
 import Swal from "sweetalert2";
 import themeStore from '@/app/zustandData/theme.zustand';
 import useStore from "@/app/hooks/useStore";
-import SubmitDocument from "@/app/Servises-AsiaApp/M_Automation/NewDocument/SubmitDocument";
+import { UploadFilesModel } from "@/app/Domain/M_Automation/NewDocument/Attachments";
+import SaveMainImage from "@/app/Servises-AsiaApp/M_Automation/NewDocument/SavemainImage";
 
-export const Douments = () => {
+export const useUploadImage = () => {
     const themeMode = useStore(themeStore, (state) => state)
-    const { Function } = SubmitDocument()
-    const SubmitDocuments = async (docheapId: string, submitDate: string) => {
+    const { Function } = SaveMainImage()
+    const UploadImportImage = async (file: UploadFilesModel, docheapId: string, docTypeId: string) => {
         const result = await Swal.fire({
             background: !themeMode || themeMode?.stateMode == true ? "#22303c" : "#eee3d7",
             color: !themeMode || themeMode?.stateMode == true ? "white" : "#463b2f",
             allowOutsideClick: false,
-            title: 'ثبت صادره مدرک',
+            title: 'Save Main Image',
             text: "Are you sure?",
             icon: "question",
             showCancelButton: true,
@@ -21,7 +22,7 @@ export const Douments = () => {
             confirmButtonText: "Yes!"
         })
         if (result.isConfirmed) {
-            const response = await Function(docheapId, submitDate);
+            const response = await Function(file, docheapId, docTypeId);
             if (response) {
                 if (response.status == 401) {
                     return response.data.message
@@ -29,18 +30,17 @@ export const Douments = () => {
                 if ( response.data.data !== null && response.data.status) {
                     return response.data.data
                 } else {
-                   await Swal.fire({
+                    const res = Swal.fire({
                         background: !themeMode || themeMode?.stateMode == true ? "#22303c" : "#eee3d7",
                         color: !themeMode || themeMode?.stateMode == true ? "white" : "#463b2f",
                         allowOutsideClick: false,
-                        title: 'ثبت صادره مدرک',
+                        title: 'Save Main Image',
                         text: response.data.message,
                         icon: response.data.status == true ? "warning" : 'error',
                         confirmButtonColor: "#22c55e",
                         confirmButtonText: "Ok!"
                     })
-
-                    
+                    return res
                 }}
             }
         } else {
@@ -48,5 +48,5 @@ export const Douments = () => {
             return res
         }
     }
-    return { SubmitDocuments };
+    return { UploadImportImage };
 }

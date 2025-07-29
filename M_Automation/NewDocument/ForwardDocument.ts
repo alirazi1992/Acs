@@ -1,47 +1,14 @@
-import { AddForwardReceiver, ForwardResultModel } from "@/app/Domain/M_Automation/NewDocument/toolbars";
-import { Response } from "@/app/Domain/shared";
-import useAxios from "@/app/hooks/useAxios";
-import { AxiosResponse } from "axios";
+import Swal from "sweetalert2";
+import themeStore from "@/app/zustandData/theme.zustand";
+import useStore from "@/app/hooks/useStore";
+import { AddForwardReceiver } from "@/app/Domain/M_Automation/NewDocument/toolbars";
+import ForwardDocument from "@/app/Servises-AsiaApp/M_Automation/NewDocument/ForwardDocument";
+import ConfirmForwardDocument from "@/app/Servises-AsiaApp/M_Automation/NewDocument/ConfirmForward";
 
-// const ForwardDocument = async (receivers: AddForwardReceiver, docheapId: string, subject: string, forwardParentId: number, indicator: string) => {
-//     let url = `${process.env.NEXT_PUBLIC_API_URL}/Automation/General/forward`;
-//     let method = "put";
-//     let data = {
-//         "forwardDoc": {
-//             "receivers": receivers.Forward.AddReceiver.map((item) => {
-//                 return {
-//                     "receiverActorId": item.receiverActorId,
-//                     "receiveTypeId": item.receiveTypeId,
-//                     "personalDesc": item.personalDesc,
-//                     "isHidden": item.isHidden,
-//                 }
-//             }),
-//             "forwardDesc": receivers.Forward.forwardDesc,
-//             "files": receivers.Forward.files?.map((item) => {
-//                 return {
-//                     "attachment": item.attachment,
-//                     "description": item.description,
-//                     "fileTitle": item.fileTitle,
-//                     "type": item.type
-//                 }
-//             }),
-//             "docHeapId": docheapId,
-//             "parentForwardTargetId": forwardParentId ?? 0,
-//             "subject": subject,
-//             "docIndicator": indicator,
-//         },
-//         "recipientTitles": receivers.Forward.AddReceiver.map((item) => {
-//             return item.title
-//         })
-//     };
-//     let response: AxiosResponse<Response<ForwardResultModel>> = await useAxios({ url, method, data, credentials: true })
-//     return response;
-// }
-// export default
-
-const ForwardDocument = () => {
-  const { AxiosRequest } = useAxios();
-  const Function = async (
+export const useDocument = () => {
+  const themeMode = useStore(themeStore, (state) => state);
+  const { Function } = ForwardDocument();
+  const Forward = async (
     receivers: AddForwardReceiver,
     docheapId: string,
     subject: string,
@@ -49,45 +16,64 @@ const ForwardDocument = () => {
     indicator: string,
     docTypeId: string
   ) => {
-    let url = `${process.env.NEXT_PUBLIC_API_URL}/Automation/General/forward`;
-    let method = "put";
-    let data = {
-      forwardDoc: {
-        receivers: receivers.Forward.AddReceiver.map((item) => {
-          return {
-            receiverActorId: item.receiverActorId,
-            receiveTypeId: item.receiveTypeId,
-            personalDesc: item.personalDesc,
-            isHidden: item.isHidden,
-          };
-        }),
-        forwardDesc: receivers.Forward.forwardDesc,
-        files: receivers.Forward.files?.map((item) => {
-          return {
-            attachment: item.attachment,
-            description: item.description,
-            fileTitle: item.fileTitle,
-            type: item.type,
-          };
-        }),
-        docHeapId: docheapId,
-        parentForwardTargetId: forwardParentId ?? 0,
-        subject: subject,
-        docIndicator: indicator,
-        docTypeId,
-      },
-      recipientTitles: receivers.Forward.AddReceiver.map((item) => {
-        return item.title;
-      }),
-    };
-    let response: AxiosResponse<Response<ForwardResultModel>> = await AxiosRequest({
-      url,
-      method,
-      data,
-      credentials: true,
-    });
-    return response;
+    const response = await Function(receivers, docheapId, subject, forwardParentId, indicator, docTypeId);
+    if (response) {
+      if (response.status == 401) {
+        return response.data.message;
+      } else {
+        if (response.data.status && response.data.data) {
+          return response.data.data;
+        } else {
+          const res = Swal.fire({
+            background: !themeMode || themeMode?.stateMode == true ? "#22303c" : "#eee3d7",
+            color: !themeMode || themeMode?.stateMode == true ? "white" : "#463b2f",
+            allowOutsideClick: false,
+            title: "Forward Document!",
+            text: response.data.message,
+            icon: response.data.status ? "warning" : "error",
+            confirmButtonColor: "#22c55e",
+            confirmButtonText: "Ok!",
+          });
+          return res;
+        }
+      }
+    }
   };
-  return { Function };
+  return { Forward };
 };
-export default ForwardDocument;
+export const useConfirmForwardDocument = () => {
+  const themeMode = useStore(themeStore, (state) => state);
+  const { Function } = ConfirmForwardDocument();
+  const ConfirmForward = async (
+    receivers: AddForwardReceiver,
+    docheapId: string,
+    subject: string,
+    forwardParentId: number,
+    indicator: string,
+    docTypeId: string
+  ) => {
+    const response = await Function(receivers, docheapId, subject, forwardParentId, indicator, docTypeId);
+    if (response) {
+      if (response.status == 401) {
+        return response.data.message;
+      } else {
+        if (response.data.data) {
+          return response.data.data;
+        } else {
+          const res = Swal.fire({
+            background: !themeMode || themeMode?.stateMode == true ? "#22303c" : "#eee3d7",
+            color: !themeMode || themeMode?.stateMode == true ? "white" : "#463b2f",
+            allowOutsideClick: false,
+            title: "Confirm and Forward Document!",
+            text: response.data.message,
+            icon: response.data.status ? "warning" : "error",
+            confirmButtonColor: "#22c55e",
+            confirmButtonText: "Ok!",
+          });
+          return res;
+        }
+      }
+    }
+  };
+  return { ConfirmForward };
+};

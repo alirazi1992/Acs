@@ -2,45 +2,44 @@
 import Swal from "sweetalert2";
 import themeStore from '@/app/zustandData/theme.zustand';
 import useStore from "@/app/hooks/useStore";
-import SubmitDocument from "@/app/Servises-AsiaApp/M_Automation/NewDocument/SubmitDocument";
+import RemoveParaph from "@/app/Servises-AsiaApp/M_Automation/NewDocument/DeleteParaph";
 
-export const Douments = () => {
+export const RemovingPraraph = () => {
     const themeMode = useStore(themeStore, (state) => state)
-    const { Function } = SubmitDocument()
-    const SubmitDocuments = async (docheapId: string, submitDate: string) => {
+    const { Function } = RemoveParaph()
+    const RemoveParaphList = async (docheapId: string, id: number) => {
         const result = await Swal.fire({
             background: !themeMode || themeMode?.stateMode == true ? "#22303c" : "#eee3d7",
             color: !themeMode || themeMode?.stateMode == true ? "white" : "#463b2f",
             allowOutsideClick: false,
-            title: 'ثبت صادره مدرک',
+            title: "Remove paraph from list!",
             text: "Are you sure?",
             icon: "question",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
-            confirmButtonText: "Yes!"
+            confirmButtonText: "Yes, remove it!"
         })
         if (result.isConfirmed) {
-            const response = await Function(docheapId, submitDate);
+            const response = await Function(docheapId, id);
             if (response) {
                 if (response.status == 401) {
                     return response.data.message
                 }else{
-                if ( response.data.data !== null && response.data.status) {
+                if ( response.data.data && response.data.status) {
                     return response.data.data
                 } else {
-                   await Swal.fire({
+                    const res = Swal.fire({
                         background: !themeMode || themeMode?.stateMode == true ? "#22303c" : "#eee3d7",
                         color: !themeMode || themeMode?.stateMode == true ? "white" : "#463b2f",
                         allowOutsideClick: false,
-                        title: 'ثبت صادره مدرک',
+                        title: "Remove paraph from list!",
                         text: response.data.message,
-                        icon: response.data.status == true ? "warning" : 'error',
+                        icon: response.data.data == 0 && response.data.status == true ? "warning" : 'error',
                         confirmButtonColor: "#22c55e",
                         confirmButtonText: "Ok!"
                     })
-
-                    
+                    return res
                 }}
             }
         } else {
@@ -48,5 +47,6 @@ export const Douments = () => {
             return res
         }
     }
-    return { SubmitDocuments };
+
+    return { RemoveParaphList };
 }

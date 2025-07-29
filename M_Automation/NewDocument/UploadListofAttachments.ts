@@ -2,17 +2,18 @@
 import Swal from "sweetalert2";
 import themeStore from '@/app/zustandData/theme.zustand';
 import useStore from "@/app/hooks/useStore";
-import SubmitDocument from "@/app/Servises-AsiaApp/M_Automation/NewDocument/SubmitDocument";
+import UploadListofAttachments from "@/app/Servises-AsiaApp/M_Automation/NewDocument/UploadListOfAttachment";
+import { UploadFilesModel } from "@/app/Domain/M_Automation/NewDocument/Attachments";
 
-export const Douments = () => {
+export const ListAttachments = () => {
     const themeMode = useStore(themeStore, (state) => state)
-    const { Function } = SubmitDocument()
-    const SubmitDocuments = async (docheapId: string, submitDate: string) => {
+    const { Function } = UploadListofAttachments()
+    const UploadListAttachments = async (docheapId: string, docTypeId: string, UploadFiles: UploadFilesModel[]) => {
         const result = await Swal.fire({
             background: !themeMode || themeMode?.stateMode == true ? "#22303c" : "#eee3d7",
             color: !themeMode || themeMode?.stateMode == true ? "white" : "#463b2f",
             allowOutsideClick: false,
-            title: 'ثبت صادره مدرک',
+            title: 'Upload List of Attachments',
             text: "Are you sure?",
             icon: "question",
             showCancelButton: true,
@@ -21,26 +22,25 @@ export const Douments = () => {
             confirmButtonText: "Yes!"
         })
         if (result.isConfirmed) {
-            const response = await Function(docheapId, submitDate);
+            const response = await Function(docheapId, docTypeId, UploadFiles);
             if (response) {
                 if (response.status == 401) {
                     return response.data.message
                 }else{
-                if ( response.data.data !== null && response.data.status) {
+                if ( response.data.status && response.data.data && response.data.data.length > 0) {
                     return response.data.data
                 } else {
-                   await Swal.fire({
+                    const res = Swal.fire({
                         background: !themeMode || themeMode?.stateMode == true ? "#22303c" : "#eee3d7",
                         color: !themeMode || themeMode?.stateMode == true ? "white" : "#463b2f",
                         allowOutsideClick: false,
-                        title: 'ثبت صادره مدرک',
+                        title: 'Upload List of Attachments',
                         text: response.data.message,
                         icon: response.data.status == true ? "warning" : 'error',
                         confirmButtonColor: "#22c55e",
                         confirmButtonText: "Ok!"
                     })
-
-                    
+                    return res
                 }}
             }
         } else {
@@ -48,5 +48,5 @@ export const Douments = () => {
             return res
         }
     }
-    return { SubmitDocuments };
+    return { UploadListAttachments };
 }

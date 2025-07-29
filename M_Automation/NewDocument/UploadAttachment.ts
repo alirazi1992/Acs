@@ -1,41 +1,52 @@
-import { UploadFilesModel, UploadListofAttachmentsModel } from "@/app/Domain/M_Automation/NewDocument/Attachments";
-import { Response } from "@/app/Domain/shared";
-import useAxios from "@/app/hooks/useAxios";
-import { AxiosResponse } from "axios";
+'use client'
+import Swal from "sweetalert2";
+import themeStore from '@/app/zustandData/theme.zustand';
+import useStore from "@/app/hooks/useStore";
+import { UploadFilesModel } from "@/app/Domain/M_Automation/NewDocument/Attachments";
+import UploadAttachment from "@/app/Servises-AsiaApp/M_Automation/NewDocument/UploadAttachment";
 
-// const UploadAttachment = async (docheapId: string, docTypeId: string, UploadFile: UploadFilesModel) => {
-//     let url = `${process.env.NEXT_PUBLIC_API_URL}/Automation/General/uploadattachment`;
-//     let method = "put";
-//     let data = {
-//         "file": UploadFile.file,
-//         "type": UploadFile.type,
-//         "title": UploadFile.title,
-//         "desc": UploadFile.desc,
-//         "docHeapId": docheapId,
-//         "docTypeId": docTypeId
-//     }
-//     let response: AxiosResponse<Response<UploadListofAttachmentsModel>> = await useAxios({ url, method, data, credentials: true })
-//     return response;
-// }
-// export default UploadAttachment
-
-
-const UploadAttachment = () => {
-    const { AxiosRequest } = useAxios();
-    const Function = async (docheapId: string, docTypeId: string, UploadFile: UploadFilesModel) => {
-        let url = `${process.env.NEXT_PUBLIC_API_URL}/Automation/General/uploadattachment`;
-        let method = "put";
-        let data = {
-            "file": UploadFile.file,
-            "type": UploadFile.type,
-            "title": UploadFile.title,
-            "desc": UploadFile.desc,
-            "docHeapId": docheapId,
-            "docTypeId": docTypeId
+export const useUploadAttachment = () => {
+    const themeMode = useStore(themeStore, (state) => state)
+    const { Function } = UploadAttachment()
+    const UploadFileAttachment = async (docheapId: string, docTypeId: string, UploadFile: UploadFilesModel) => {
+        const result = await Swal.fire({
+            background: !themeMode || themeMode?.stateMode == true ? "#22303c" : "#eee3d7",
+            color: !themeMode || themeMode?.stateMode == true ? "white" : "#463b2f",
+            allowOutsideClick: false,
+            title: 'Upload Attachment',
+            text: "Are you sure?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes!"
+        })
+        if (result.isConfirmed) {
+            const response = await Function(docheapId, docTypeId, UploadFile);
+            if (response) {
+                if (response.status == 401) {
+                    return response.data.message
+                }else{
+                if ( response.data.data !== null && response.data.status) {
+                    return response.data.data
+                } else {
+                    const res = Swal.fire({
+                        background: !themeMode || themeMode?.stateMode == true ? "#22303c" : "#eee3d7",
+                        color: !themeMode || themeMode?.stateMode == true ? "white" : "#463b2f",
+                        allowOutsideClick: false,
+                        title: 'Upload Attachment',
+                        text: response.data.message,
+                        icon: response.data.status == true ? "warning" : 'error',
+                        confirmButtonColor: "#22c55e",
+                        confirmButtonText: "Ok!"
+                    })
+                    return res
+                }}
+            }
+        } else {
+            const res = 'dissmiss'
+            return res
         }
-        let response: AxiosResponse<Response<UploadListofAttachmentsModel>> = await AxiosRequest({ url, method, data, credentials: true })
-        return response;
     }
-    return { Function }
+    return { UploadFileAttachment };
 }
-export default UploadAttachment

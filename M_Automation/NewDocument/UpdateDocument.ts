@@ -1,156 +1,53 @@
-
+'use client'
+import Swal from "sweetalert2";
+import themeStore from '@/app/zustandData/theme.zustand';
+import useStore from "@/app/hooks/useStore";
+import UpdateDocument from "@/app/Servises-AsiaApp/M_Automation/NewDocument/UpdateDocument";
 import { GetDocumentDataModel } from "@/app/Domain/M_Automation/NewDocument/NewDocument";
-import { GetMainReceiver } from "@/app/Domain/M_Automation/NewDocument/Receivers";
-import { Response } from "@/app/Domain/shared";
 import { ReceiversType } from "@/app/EndPoints-AsiaApp/Components/Pages/M_Automation/NewDocument/NewDocument-MainContainer";
-import useAxios from "@/app/hooks/useAxios";
-import { AxiosResponse } from "axios";
 
-// export async function UpdateDocument(receivers: ReceiversType, docData: GetDocumentDataModel[], docheapId: string, docTypeId: string, indicator: string) {
-//     let url = `${process.env.NEXT_PUBLIC_API_URL}/Automation/General/updatedoc`;
-//     let method = "patch";
-//     let data = {
-//         docHeapId: docheapId,
-//         docTypeId: docTypeId,
-//         indicator: indicator,
-//         content:
-//             JSON.stringify(docData.map((option: GetDocumentDataModel) => {
-//                 switch (option.fieldName) {
-//                     case "MainReceiver":
-//                         return {
-//                             FieldId: option.fieldId,
-//                             Name: option.fieldName,
-//                             RecordId: option.recordId,
-//                             Value: receivers.mainReceivers?.map((item: GetMainReceiver) => (
-//                                 {
-//                                     Actor: {
-//                                         Level: item.Level,
-//                                         Action: item.ActionId,
-//                                         Id: item.Id
-//                                     }
-//                                 }
-//                             ))
-//                         }
-//                     case "Sender":
-//                         return {
-//                             FieldId: option.fieldId,
-//                             Name: option.fieldName,
-//                             RecordId: option.recordId,
-//                             Value: receivers.senders!.map((item: GetMainReceiver) => (
-//                                 {
-//                                     Actor: {
-//                                         Level: item.Level,
-//                                         Action: item.ActionId,
-//                                         Id: item.Id,
-//                                     }
-//                                 }
-//                             ))
-//                         }
-
-//                     case "CopyReceiver":
-//                         return {
-//                             FieldId: option.fieldId,
-//                             Name: option.fieldName,
-//                             RecordId: option.recordId,
-//                             Value: receivers.copyReceivers?.map((item: GetMainReceiver) => (
-//                                 {
-//                                     Actor: {
-//                                         Level: item.Level,
-//                                         Action: item.ActionId,
-//                                         Id: item.Id,
-//                                         Desc: item.Description
-//                                     }
-//                                 }
-//                             ))
-//                         }
-//                     default:
-//                         return {
-//                             FieldId: option.fieldId,
-//                             Name: option.fieldName,
-//                             RecordId: option.recordId,
-//                             Value: option.fieldValue
-//                         }
-//                 }
-//             }
-//             )),
-//     }
-//     let response: AxiosResponse<Response<number>> = await useAxios({ url, method, data, credentials: true })
-//     return response;
-// }
-
-const UpdateDocument = () => {
-    const { AxiosRequest } = useAxios();
-    const Function = async (receivers: ReceiversType, docData: GetDocumentDataModel[], docheapId: string, docTypeId: string, indicator: string) => {
-        let url = `${process.env.NEXT_PUBLIC_API_URL}/Automation/General/updatedoc`;
-        let method = "patch";
-        let data = {
-            docHeapId: docheapId,
-            docTypeId: docTypeId,
-            indicator: indicator,
-            content:
-                JSON.stringify(docData.map((option: GetDocumentDataModel) => {
-                    switch (option.fieldName) {
-                        case "MainReceiver":
-                            return {
-                                FieldId: option.fieldId,
-                                Name: option.fieldName,
-                                RecordId: option.recordId,
-                                Value: receivers.mainReceivers?.map((item: GetMainReceiver) => (
-                                    {
-                                        Actor: {
-                                            Level: item.Level,
-                                            Action: item.ActionId,
-                                            Id: item.Id
-                                        }
-                                    }
-                                ))
-                            }
-                        case "Sender":
-                            return {
-                                FieldId: option.fieldId,
-                                Name: option.fieldName,
-                                RecordId: option.recordId,
-                                Value: receivers.senders!.map((item: GetMainReceiver) => (
-                                    {
-                                        Actor: {
-                                            Level: item.Level,
-                                            Action: item.ActionId,
-                                            Id: item.Id,
-                                        }
-                                    }
-                                ))
-                            }
-    
-                        case "CopyReceiver":
-                            return {
-                                FieldId: option.fieldId,
-                                Name: option.fieldName,
-                                RecordId: option.recordId,
-                                Value: receivers.copyReceivers?.map((item: GetMainReceiver) => (
-                                    {
-                                        Actor: {
-                                            Level: item.Level,
-                                            Action: item.ActionId,
-                                            Id: item.Id,
-                                            Desc: item.Description
-                                        }
-                                    }
-                                ))
-                            }
-                        default:
-                            return {
-                                FieldId: option.fieldId,
-                                Name: option.fieldName,
-                                RecordId: option.recordId,
-                                Value: option.fieldValue
-                            }
-                    }
-                }
-                )),
+export const UpdateDocs = () => {
+    const themeMode = useStore(themeStore, (state) => state)
+    const { Function } = UpdateDocument()
+    const UpdateDocuments = async (receivers: ReceiversType, docData: GetDocumentDataModel[], docheapId: string, docTypeId: string, indicator: string) => {
+        const result = await Swal.fire({
+            background: !themeMode || themeMode?.stateMode == true ? "#22303c" : "#eee3d7",
+            color: !themeMode || themeMode?.stateMode == true ? "white" : "#463b2f",
+            allowOutsideClick: false,
+            title: 'Update Document',
+            text: "Are you sure?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes!"
+        })
+        if (result.isConfirmed) {
+            const response = await Function(receivers, docData, docheapId, docTypeId, indicator)
+            if (response) {
+                if (response.status == 401) {
+                    return response.data.message
+                }else{
+                if ( response.data.data !== 0 && response.data.status) {
+                    return response.data.data
+                } else {
+                    const res = Swal.fire({
+                        background: !themeMode || themeMode?.stateMode == true ? "#22303c" : "#eee3d7",
+                        color: !themeMode || themeMode?.stateMode == true ? "white" : "#463b2f",
+                        allowOutsideClick: false,
+                        title: 'Update Document',
+                        text: response.data.message,
+                        icon: response.data.status == true ? "warning" : 'error',
+                        confirmButtonColor: "#22c55e",
+                        confirmButtonText: "Ok!"
+                    })
+                    return res
+                }}
+            }
+        } else {
+            const res = 'dissmiss'
+            return res
         }
-        let response: AxiosResponse<Response<number>> = await AxiosRequest({ url, method, data, credentials: true })
-        return response;
     }
-    return { Function }
+    return { UpdateDocuments };
 }
-export default UpdateDocument
