@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ✅ ASC Processes Tab – Development Progress (Frontend)
 
-## Getting Started
+## 📅 Date: 2025-07-30
+### 👨‍💻 Developer: Ali Razi
+### 🔧 Tech Stack: Next.js (App Router), TypeScript, TailwindCSS, Headless UI, React Hook Form, Yup
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✅ Features Completed
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### ✅ 1. Processes Tab Base Structure
+- Created new route: `/app/app/Home/process/processes/page.tsx`
+- Integrated `MyCustomComponent` and maintained RTL layout
+- Created `ProcessesContainer` to manage state and display logic
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### ✅ 2. Modal-Based "ثبت فرآیند"
+- Replaced inline form with a modal using Headless UI `<Dialog />`
+- Modal appears when clicking top-right ➕ `افزودن فرآیند`
+- Designed clean modal layout with RTL support
+- Only one field included: `نام فرآیند`
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+### ✅ 3. API Integration with POST
+- Connected form submission to `/api/process` (App Router API route)
+- API receives `POST` request and returns `200 OK` if `name` is provided
+- On `200` response:
+  - Modal closes
+  - New process is added to top of the table (index `0`)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### ✅ 4. Table Display with Search, Delete, Pagination
+- Table only appears after valid processes exist
+- Added search bar (top-left) with real-time filtering
+- Added delete button in each row:
+  - Deletes item from state (mocked for now)
+  - Will later connect to API `DELETE /api/process/:id`
+- Added pagination:
+  - Syncs with search results
+  - Navigation buttons below table
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## ✅ Folder Structure Used
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+app/
+
+└── app/
+
+└── Home/
+
+└── process/
+
+└── processes/
+
+├── page.tsx
+
+└── _components/
+
+├── ProcessesContainer.tsx
+
+├── ProcessTable.tsx
+
+├── ProcessModal.tsx
+
+└── ModuleItem.tsx (legacy)
+
