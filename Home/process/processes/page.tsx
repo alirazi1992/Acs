@@ -1,18 +1,16 @@
 "use client";
-import MyCustomComponent from "@/app/EndPoints-AsiaApp/Components/Shared/CustomTheme_Mui";
-import React from "react";
 
-const page = () => {
+import MyCustomComponent from "@/app/EndPoints-AsiaApp/Components/Shared/CustomTheme_Mui";
+import { ProcessesContainer } from "./_components/ProcessesContainer";
+
+const ProcessesPage = () => {
   return (
     <div dir="rtl">
       <MyCustomComponent>
-        <div>
-          <h1>test</h1>
-          page
-        </div>
+        <ProcessesContainer />
       </MyCustomComponent>
     </div>
   );
 };
 
-export default page;
+export default ProcessesPage;
